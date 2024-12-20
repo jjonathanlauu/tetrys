@@ -1,0 +1,203 @@
+<html>
+<head>
+<title>main.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #ed864a;}
+.s1 { color: #ebebeb;}
+.s2 { color: #ed864a; font-weight: bold;}
+.s3 { color: #33ccff; font-weight: bold;}
+.s4 { color: #54b33e;}
+.s5 { color: #7ec3e6;}
+</style>
+</head>
+<body bgcolor="#131314">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+main.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">pygame</span>
+<span class="s0">from </span><span class="s1">copy </span><span class="s0">import </span><span class="s1">deepcopy</span>
+<span class="s0">from </span><span class="s1">random </span><span class="s0">import </span><span class="s1">choice</span><span class="s2">, </span><span class="s1">randrange</span>
+
+<span class="s1">W</span><span class="s2">, </span><span class="s1">H = </span><span class="s3">10</span><span class="s2">, </span><span class="s3">18</span>
+<span class="s1">TILE = </span><span class="s3">45</span>
+<span class="s1">GAME_RES = W * TILE</span><span class="s2">, </span><span class="s1">H * TILE</span>
+<span class="s1">RES = </span><span class="s3">750</span><span class="s2">, </span><span class="s3">940</span>
+<span class="s1">FPS = </span><span class="s3">60</span>
+
+<span class="s1">pygame.init()</span>
+<span class="s1">sc = pygame.display.set_mode(RES)</span>
+<span class="s1">game_sc = pygame.Surface(GAME_RES)</span>
+<span class="s1">clock = pygame.time.Clock()</span>
+
+<span class="s1">grid = [pygame.Rect(x * TILE</span><span class="s2">, </span><span class="s1">y * TILE</span><span class="s2">, </span><span class="s1">TILE</span><span class="s2">, </span><span class="s1">TILE) </span><span class="s0">for </span><span class="s1">x </span><span class="s0">in </span><span class="s1">range(W) </span><span class="s0">for </span><span class="s1">y </span><span class="s0">in </span><span class="s1">range(H)]</span>
+
+<span class="s1">figures_pos = [[(-</span><span class="s3">1</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">2</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">1</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)]</span><span class="s2">,</span>
+               <span class="s1">[(</span><span class="s3">0</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)]</span><span class="s2">,</span>
+               <span class="s1">[(-</span><span class="s3">1</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)]</span><span class="s2">,</span>
+               <span class="s1">[(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)]</span><span class="s2">,</span>
+               <span class="s1">[(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)]</span><span class="s2">,</span>
+               <span class="s1">[(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">1</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)]</span><span class="s2">,</span>
+               <span class="s1">[(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">1</span><span class="s1">)</span><span class="s2">, </span><span class="s1">(-</span><span class="s3">1</span><span class="s2">, </span><span class="s3">0</span><span class="s1">)]]</span>
+
+<span class="s1">figures = [[pygame.Rect(x + W // </span><span class="s3">2</span><span class="s2">, </span><span class="s1">y + </span><span class="s3">1</span><span class="s2">, </span><span class="s3">1</span><span class="s2">, </span><span class="s3">1</span><span class="s1">) </span><span class="s0">for </span><span class="s1">x</span><span class="s2">, </span><span class="s1">y </span><span class="s0">in </span><span class="s1">fig_pos] </span><span class="s0">for </span><span class="s1">fig_pos </span><span class="s0">in </span><span class="s1">figures_pos]</span>
+<span class="s1">figure_rect = pygame.Rect(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s2">, </span><span class="s1">TILE - </span><span class="s3">2</span><span class="s2">, </span><span class="s1">TILE - </span><span class="s3">2</span><span class="s1">)</span>
+<span class="s1">field = [[</span><span class="s3">0 </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(W)] </span><span class="s0">for </span><span class="s1">j </span><span class="s0">in </span><span class="s1">range(H)]</span>
+
+<span class="s1">anim_count</span><span class="s2">, </span><span class="s1">anim_speed</span><span class="s2">, </span><span class="s1">anim_limit = </span><span class="s3">0</span><span class="s2">, </span><span class="s3">60</span><span class="s2">, </span><span class="s3">2000</span>
+
+<span class="s1">bg = pygame.image.load(</span><span class="s4">'img/bg.jpg'</span><span class="s1">).convert()</span>
+<span class="s1">game_bg = pygame.image.load(</span><span class="s4">'img/bg2.jpg'</span><span class="s1">).convert()</span>
+
+<span class="s1">main_font = pygame.font.Font(</span><span class="s4">'font/font.ttf'</span><span class="s2">, </span><span class="s3">65</span><span class="s1">)</span>
+<span class="s1">font = pygame.font.Font(</span><span class="s4">'font/font.ttf'</span><span class="s2">, </span><span class="s3">45</span><span class="s1">)</span>
+
+<span class="s1">title_tetris = main_font.render(</span><span class="s4">'TETRIS'</span><span class="s2">, </span><span class="s0">True</span><span class="s2">, </span><span class="s1">pygame.Color(</span><span class="s4">'darkorange'</span><span class="s1">))</span>
+<span class="s1">title_score = font.render(</span><span class="s4">'score:'</span><span class="s2">, </span><span class="s0">True</span><span class="s2">, </span><span class="s1">pygame.Color(</span><span class="s4">'green'</span><span class="s1">))</span>
+<span class="s1">title_record = font.render(</span><span class="s4">'record:'</span><span class="s2">, </span><span class="s0">True</span><span class="s2">, </span><span class="s1">pygame.Color(</span><span class="s4">'purple'</span><span class="s1">))</span>
+
+<span class="s1">get_color = </span><span class="s0">lambda </span><span class="s1">: (randrange(</span><span class="s3">30</span><span class="s2">, </span><span class="s3">256</span><span class="s1">)</span><span class="s2">, </span><span class="s1">randrange(</span><span class="s3">30</span><span class="s2">, </span><span class="s3">256</span><span class="s1">)</span><span class="s2">, </span><span class="s1">randrange(</span><span class="s3">30</span><span class="s2">, </span><span class="s3">256</span><span class="s1">))</span>
+
+<span class="s1">figure</span><span class="s2">, </span><span class="s1">next_figure = deepcopy(choice(figures))</span><span class="s2">, </span><span class="s1">deepcopy(choice(figures))</span>
+<span class="s1">color</span><span class="s2">, </span><span class="s1">next_color = get_color()</span><span class="s2">, </span><span class="s1">get_color()</span>
+
+<span class="s1">score</span><span class="s2">, </span><span class="s1">lines = </span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span>
+<span class="s1">scores = {</span><span class="s3">0</span><span class="s1">: </span><span class="s3">0</span><span class="s2">, </span><span class="s3">1</span><span class="s1">: </span><span class="s3">100</span><span class="s2">, </span><span class="s3">2</span><span class="s1">: </span><span class="s3">300</span><span class="s2">, </span><span class="s3">3</span><span class="s1">: </span><span class="s3">700</span><span class="s2">, </span><span class="s3">4</span><span class="s1">: </span><span class="s3">1500</span><span class="s1">}</span>
+
+
+<span class="s0">def </span><span class="s1">check_borders():</span>
+    <span class="s0">if </span><span class="s1">figure[i].x &lt; </span><span class="s3">0 </span><span class="s0">or </span><span class="s1">figure[i].x &gt; W - </span><span class="s3">1</span><span class="s1">:</span>
+        <span class="s0">return False</span>
+    <span class="s0">elif </span><span class="s1">figure[i].y &gt; H - </span><span class="s3">1 </span><span class="s0">or </span><span class="s1">field[figure[i].y][figure[i].x]:</span>
+        <span class="s0">return False</span>
+    <span class="s0">return True</span>
+
+
+<span class="s0">def </span><span class="s1">get_record():</span>
+    <span class="s0">try</span><span class="s1">:</span>
+        <span class="s0">with </span><span class="s1">open(</span><span class="s4">'record'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">f:</span>
+            <span class="s0">return </span><span class="s1">f.readline()</span>
+    <span class="s0">except </span><span class="s1">FileNotFoundError:</span>
+        <span class="s0">with </span><span class="s1">open(</span><span class="s4">'record'</span><span class="s2">, </span><span class="s4">'w'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">f:</span>
+            <span class="s1">f.write(</span><span class="s4">'0'</span><span class="s1">)</span>
+
+
+<span class="s0">def </span><span class="s1">set_record(record</span><span class="s2">, </span><span class="s1">score):</span>
+    <span class="s1">rec = max(int(record)</span><span class="s2">, </span><span class="s1">score)</span>
+    <span class="s0">with </span><span class="s1">open(</span><span class="s4">'record'</span><span class="s2">, </span><span class="s4">'w'</span><span class="s1">) </span><span class="s0">as </span><span class="s1">f:</span>
+        <span class="s1">f.write(str(rec))</span>
+
+
+<span class="s0">while True</span><span class="s1">:</span>
+    <span class="s1">record = get_record()</span>
+    <span class="s1">dx</span><span class="s2">, </span><span class="s1">rotate = </span><span class="s3">0</span><span class="s2">, </span><span class="s0">False</span>
+    <span class="s1">sc.blit(bg</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">))</span>
+    <span class="s1">sc.blit(game_sc</span><span class="s2">, </span><span class="s1">(</span><span class="s3">20</span><span class="s2">, </span><span class="s3">20</span><span class="s1">))</span>
+    <span class="s1">game_sc.blit(game_bg</span><span class="s2">, </span><span class="s1">(</span><span class="s3">0</span><span class="s2">, </span><span class="s3">0</span><span class="s1">))</span>
+    <span class="s5"># delay for full lines</span>
+    <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(lines):</span>
+        <span class="s1">pygame.time.wait(</span><span class="s3">200</span><span class="s1">)</span>
+    <span class="s5"># control</span>
+    <span class="s0">for </span><span class="s1">event </span><span class="s0">in </span><span class="s1">pygame.event.get():</span>
+        <span class="s0">if </span><span class="s1">event.type == pygame.QUIT:</span>
+            <span class="s1">exit()</span>
+        <span class="s0">if </span><span class="s1">event.type == pygame.KEYDOWN:</span>
+            <span class="s0">if </span><span class="s1">event.key == pygame.K_LEFT:</span>
+                <span class="s1">dx = -</span><span class="s3">1</span>
+            <span class="s0">elif </span><span class="s1">event.key == pygame.K_RIGHT:</span>
+                <span class="s1">dx = </span><span class="s3">1</span>
+            <span class="s0">elif </span><span class="s1">event.key == pygame.K_DOWN:</span>
+                <span class="s1">anim_limit = </span><span class="s3">100</span>
+            <span class="s0">elif </span><span class="s1">event.key == pygame.K_UP:</span>
+                <span class="s1">rotate = </span><span class="s0">True</span>
+    <span class="s5"># move x</span>
+    <span class="s1">figure_old = deepcopy(figure)</span>
+    <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">4</span><span class="s1">):</span>
+        <span class="s1">figure[i].x += dx</span>
+        <span class="s0">if not </span><span class="s1">check_borders():</span>
+            <span class="s1">figure = deepcopy(figure_old)</span>
+            <span class="s0">break</span>
+    <span class="s5"># move y</span>
+    <span class="s1">anim_count += anim_speed</span>
+    <span class="s0">if </span><span class="s1">anim_count &gt; anim_limit:</span>
+        <span class="s1">anim_count = </span><span class="s3">0</span>
+        <span class="s1">figure_old = deepcopy(figure)</span>
+        <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">4</span><span class="s1">):</span>
+            <span class="s1">figure[i].y += </span><span class="s3">1</span>
+            <span class="s0">if not </span><span class="s1">check_borders():</span>
+                <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">4</span><span class="s1">):</span>
+                    <span class="s1">field[figure_old[i].y][figure_old[i].x] = color</span>
+                <span class="s1">figure</span><span class="s2">, </span><span class="s1">color = next_figure</span><span class="s2">, </span><span class="s1">next_color</span>
+                <span class="s1">next_figure</span><span class="s2">, </span><span class="s1">next_color = deepcopy(choice(figures))</span><span class="s2">, </span><span class="s1">get_color()</span>
+                <span class="s1">anim_limit = </span><span class="s3">2000</span>
+                <span class="s0">break</span>
+    <span class="s5"># rotate</span>
+    <span class="s1">center = figure[</span><span class="s3">0</span><span class="s1">]</span>
+    <span class="s1">figure_old = deepcopy(figure)</span>
+    <span class="s0">if </span><span class="s1">rotate:</span>
+        <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">4</span><span class="s1">):</span>
+            <span class="s1">x = figure[i].y - center.y</span>
+            <span class="s1">y = figure[i].x - center.x</span>
+            <span class="s1">figure[i].x = center.x - x</span>
+            <span class="s1">figure[i].y = center.y + y</span>
+            <span class="s0">if not </span><span class="s1">check_borders():</span>
+                <span class="s1">figure = deepcopy(figure_old)</span>
+                <span class="s0">break</span>
+    <span class="s5"># check lines</span>
+    <span class="s1">line</span><span class="s2">, </span><span class="s1">lines = H - </span><span class="s3">1</span><span class="s2">, </span><span class="s3">0</span>
+    <span class="s0">for </span><span class="s1">row </span><span class="s0">in </span><span class="s1">range(H - </span><span class="s3">1</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s2">, </span><span class="s1">-</span><span class="s3">1</span><span class="s1">):</span>
+        <span class="s1">count = </span><span class="s3">0</span>
+        <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(W):</span>
+            <span class="s0">if </span><span class="s1">field[row][i]:</span>
+                <span class="s1">count += </span><span class="s3">1</span>
+            <span class="s1">field[line][i] = field[row][i]</span>
+        <span class="s0">if </span><span class="s1">count &lt; W:</span>
+            <span class="s1">line -= </span><span class="s3">1</span>
+        <span class="s0">else</span><span class="s1">:</span>
+            <span class="s1">anim_speed += </span><span class="s3">3</span>
+            <span class="s1">lines += </span><span class="s3">1</span>
+    <span class="s5"># compute score</span>
+    <span class="s1">score += scores[lines]</span>
+    <span class="s5"># draw grid</span>
+    <span class="s1">[pygame.draw.rect(game_sc</span><span class="s2">, </span><span class="s1">(</span><span class="s3">40</span><span class="s2">, </span><span class="s3">40</span><span class="s2">, </span><span class="s3">40</span><span class="s1">)</span><span class="s2">, </span><span class="s1">i_rect</span><span class="s2">, </span><span class="s3">1</span><span class="s1">) </span><span class="s0">for </span><span class="s1">i_rect </span><span class="s0">in </span><span class="s1">grid]</span>
+    <span class="s5"># draw figure</span>
+    <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">4</span><span class="s1">):</span>
+        <span class="s1">figure_rect.x = figure[i].x * TILE</span>
+        <span class="s1">figure_rect.y = figure[i].y * TILE</span>
+        <span class="s1">pygame.draw.rect(game_sc</span><span class="s2">, </span><span class="s1">color</span><span class="s2">, </span><span class="s1">figure_rect)</span>
+    <span class="s5"># draw field</span>
+    <span class="s0">for </span><span class="s1">y</span><span class="s2">, </span><span class="s1">raw </span><span class="s0">in </span><span class="s1">enumerate(field):</span>
+        <span class="s0">for </span><span class="s1">x</span><span class="s2">, </span><span class="s1">col </span><span class="s0">in </span><span class="s1">enumerate(raw):</span>
+            <span class="s0">if </span><span class="s1">col:</span>
+                <span class="s1">figure_rect.x</span><span class="s2">, </span><span class="s1">figure_rect.y = x * TILE</span><span class="s2">, </span><span class="s1">y * TILE</span>
+                <span class="s1">pygame.draw.rect(game_sc</span><span class="s2">, </span><span class="s1">col</span><span class="s2">, </span><span class="s1">figure_rect)</span>
+    <span class="s5"># draw next figure</span>
+    <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(</span><span class="s3">4</span><span class="s1">):</span>
+        <span class="s1">figure_rect.x = next_figure[i].x * TILE + </span><span class="s3">380</span>
+        <span class="s1">figure_rect.y = next_figure[i].y * TILE + </span><span class="s3">185</span>
+        <span class="s1">pygame.draw.rect(sc</span><span class="s2">, </span><span class="s1">next_color</span><span class="s2">, </span><span class="s1">figure_rect)</span>
+    <span class="s5"># draw titles</span>
+    <span class="s1">sc.blit(title_tetris</span><span class="s2">, </span><span class="s1">(</span><span class="s3">485</span><span class="s2">, </span><span class="s1">-</span><span class="s3">10</span><span class="s1">))</span>
+    <span class="s1">sc.blit(title_score</span><span class="s2">, </span><span class="s1">(</span><span class="s3">535</span><span class="s2">, </span><span class="s3">500</span><span class="s1">))</span>
+    <span class="s1">sc.blit(font.render(str(score)</span><span class="s2">, </span><span class="s0">True</span><span class="s2">, </span><span class="s1">pygame.Color(</span><span class="s4">'white'</span><span class="s1">))</span><span class="s2">, </span><span class="s1">(</span><span class="s3">550</span><span class="s2">, </span><span class="s3">550</span><span class="s1">))</span>
+    <span class="s1">sc.blit(title_record</span><span class="s2">, </span><span class="s1">(</span><span class="s3">525</span><span class="s2">, </span><span class="s3">650</span><span class="s1">))</span>
+    <span class="s1">sc.blit(font.render(record</span><span class="s2">, </span><span class="s0">True</span><span class="s2">, </span><span class="s1">pygame.Color(</span><span class="s4">'gold'</span><span class="s1">))</span><span class="s2">, </span><span class="s1">(</span><span class="s3">550</span><span class="s2">, </span><span class="s3">710</span><span class="s1">))</span>
+    <span class="s5"># game over</span>
+    <span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(W):</span>
+        <span class="s0">if </span><span class="s1">field[</span><span class="s3">0</span><span class="s1">][i]:</span>
+            <span class="s1">set_record(record</span><span class="s2">, </span><span class="s1">score)</span>
+            <span class="s1">field = [[</span><span class="s3">0 </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(W)] </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(H)]</span>
+            <span class="s1">anim_count</span><span class="s2">, </span><span class="s1">anim_speed</span><span class="s2">, </span><span class="s1">anim_limit = </span><span class="s3">0</span><span class="s2">, </span><span class="s3">60</span><span class="s2">, </span><span class="s3">2000</span>
+            <span class="s1">score = </span><span class="s3">0</span>
+            <span class="s0">for </span><span class="s1">i_rect </span><span class="s0">in </span><span class="s1">grid:</span>
+                <span class="s1">pygame.draw.rect(game_sc</span><span class="s2">, </span><span class="s1">get_color()</span><span class="s2">, </span><span class="s1">i_rect)</span>
+                <span class="s1">sc.blit(game_sc</span><span class="s2">, </span><span class="s1">(</span><span class="s3">20</span><span class="s2">, </span><span class="s3">20</span><span class="s1">))</span>
+                <span class="s1">pygame.display.flip()</span>
+                <span class="s1">clock.tick(</span><span class="s3">200</span><span class="s1">)</span>
+
+    <span class="s1">pygame.display.flip()</span>
+    <span class="s1">clock.tick(FPS)</span></pre>
+</body>
+</html>
